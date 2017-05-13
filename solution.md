@@ -28,6 +28,8 @@ Kibana will be used to query Elasticsearch and visualize data:
 
 ## Diagrams
 
+The `images` folder contains the following images in **PNG** and **SVG** format.
+
 ### Component diagram
 ![Component diagram](images/md-png/diagram-01.png)
 
