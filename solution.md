@@ -53,7 +53,9 @@ Tools used for software troubleshooting have a similar architecture:
  - UI to retrieve data from the API and visualize it
 
 Here follow some ideas on how to evolve the presented solution:
-1. Fluentd could be used as a unified logging collector for applications and systems
-2. data analysis and prediction can be improved using Spark jobs to aggregate data for use in the UI
-3. a custom UI can be developed to be tailored to requirements and easier to use
-4. we could unify metrics, trace and log management when Elasticsearch will have better time series support or Grafana alerting support for Elasticsearch
+1. a local UDP/TCP agent could be used to simplify communication and reduce latency
+2. Syslog or Fluentd could be used to unify logging collectors for applications and systems
+3. to reduce performance impacts tracing could adopt a sampling strategy
+4. data analysis and prediction can be improved using Spark jobs to aggregate data for use in the UI
+5. a custom UI can be developed to be tailored to requirements and easier to use
+6. we could unify metrics, trace and log management when Elasticsearch will have better time series support or Grafana alerting support for Elasticsearch
