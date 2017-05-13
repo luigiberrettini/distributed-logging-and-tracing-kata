@@ -18,7 +18,11 @@ docker run --name ls2rmq --hostname ls2rmq --net bridgenet -d -p 1501:1501/udp -
 docker run --name ls2ela --hostname ls2ela --net bridgenet -d -v $SCRIPT_DIR/logstash-pipelines/rmq-to-elastic.conf:/usr/share/logstash/pipeline/rmq-to-elastic.conf -e 'XPACK_MONITORING_ENABLED=false' docker.elastic.co/logstash/logstash:5.4.0
 
 docker run --name rabmq --hostname rabmq --net bridgenet -d -p 4369:4369 -p 5671:5671 -p 5672:5672 -p 15671:15671 -p 15672:15672 -p 25672:25672 -e 'RABBITMQ_DEFAULT_VHOST=dlt' rabbitmq:management
-sleep 20
+docker run --net bridgenet --rm -e 'RABBIT_HOST=rabmq' -e 'RABBIT_VHOST=dlt' activatedgeek/rabbitmqadmin list nodes > /dev/null 2>&1
+while [ $? -ne 0 ]; do
+    sleep 30
+    docker run --net bridgenet --rm -e 'RABBIT_HOST=rabmq' -e 'RABBIT_VHOST=dlt' activatedgeek/rabbitmqadmin list nodes > /dev/null 2>&1
+done
 docker run --net bridgenet --rm -e 'RABBIT_HOST=rabmq' -e 'RABBIT_VHOST=dlt' activatedgeek/rabbitmqadmin declare exchange --vhost='dlt' name='x.logs' type='topic'
 docker run --net bridgenet --rm -e 'RABBIT_HOST=rabmq' -e 'RABBIT_VHOST=dlt' activatedgeek/rabbitmqadmin declare exchange --vhost='dlt' name='x.traces' type='topic'
 docker run --net bridgenet --rm -e 'RABBIT_HOST=rabmq' -e 'RABBIT_VHOST=dlt' activatedgeek/rabbitmqadmin declare queue --vhost='dlt' name='q.logs' durable='true'
