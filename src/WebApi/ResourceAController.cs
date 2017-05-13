@@ -16,7 +16,7 @@ namespace DistributedLoggingTracing.WebApi
         {
             var correlationInfo = CorrelationInfo.GetFromContext(Request.GetOwinContext());
 
-            using (var httpClient = new HttpClient(new CorrelationInfoMessageHandler(Logger, correlationInfo)))
+            using (var httpClient = new HttpClient(new CorrelationInfoMessageHandler(Logger, Request, correlationInfo)))
             {
                 var response = await httpClient.GetAsync("http://www.google.com");
 

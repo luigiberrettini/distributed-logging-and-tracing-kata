@@ -88,12 +88,14 @@
     <Compile Include="CorrelationInfoMessageHandler.cs" />
     <Compile Include="CorrelationInfoMiddleware.cs" />
     <Compile Include="CorrelationInfo.cs" />
+    <Compile Include="HttpRequestDetails.cs" />
     <Compile Include="ICorrelationInfo.cs" />
     <Compile Include="LoggerExtensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceAController.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="TraceInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NLog.config">
