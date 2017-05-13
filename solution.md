@@ -61,3 +61,28 @@ Here follow some ideas on how to evolve the presented solution:
 4. data analysis and prediction can be improved using Spark jobs to aggregate data for use in the UI
 5. a custom UI can be developed to be tailored to requirements and easier to use
 6. we could unify metrics, trace and log management when Elasticsearch will have better time series support or Grafana alerting support for Elasticsearch
+
+
+## POC
+The `src` folder contains a basic C# implementation of the solution developed using Visual Studio 2017 and the .NET Framework 4.7
+
+To test it against a virtual machine please follow the instructions below:
+1. Download VirtualBox and Vagrant and install them (Vagrant 1.9.4 needs to be manually [patched](http://github.com/mitchellh/vagrant/issues/8520))
+2. Download the Vagrantfile provided with this repo
+3. Execute the command `vagrant up`
+4. Connect via SSH to localhost on port 2200
+5. Use vagrant for both username and password
+6. Execute the following commands:
+   ```shell
+   git clone http://github.com/luigiberrettini/distributed-logging-and-tracing-kata
+   cd distributed-logging-and-tracing-kata
+   ./run.sh
+   ```
+7. Build the solution from Visual Studio
+8. Run the software
+9. Open your browser
+10. Go to http://localhost:9000/resourceA then to http://localhost:9000/resourceB
+11. Check console logs
+12. Go to Kibana at URL http://localhost:5601
+13. Configure the `dlt-*` index pattern with `occurredOn` as time field
+14. Click on **Discover** and you will see logs and traces
