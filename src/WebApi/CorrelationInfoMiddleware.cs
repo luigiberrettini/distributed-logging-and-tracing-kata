@@ -22,7 +22,7 @@ namespace DistributedLoggingTracing.WebApi
             stopwatch.Restart();
             await Next.Invoke(context);
             stopwatch.Stop();
-            Logger.Trace(BuildTraceInfo(context, stopwatch.ElapsedMilliseconds), "Received external call");
+            Logger.Trace(BuildTraceInfo(context, stopwatch.ElapsedMilliseconds), "Handled external call");
         }
 
         private TraceInfo BuildTraceInfo(IOwinContext context, long duration)

@@ -1,5 +1,4 @@
 ﻿using System.Net.Http;
-using System.Threading.Tasks;
 using System.Web.Http;
 using NLog;
 
@@ -12,19 +11,11 @@ namespace DistributedLoggingTracing.WebApi
 
         [Route("")]
         [HttpGet]
-        public async Task<IHttpActionResult> Get()
+        public IHttpActionResult Get()
         {
             var correlationInfo = CorrelationInfo.GetFromContext(Request.GetOwinContext());
-
-            using (var httpClient = new HttpClient(new CorrelationInfoMessageHandler(Logger, Request, correlationInfo)))
-            {
-                var response = await httpClient.GetAsync("http://www.google.com");
-
-                var responseStatus = response.IsSuccessStatusCode ? "Success" : "Failure";
-                Logger.Log(correlationInfo, LogLevel.Debug, $"{responseStatus} calling {nameof(ResourceAController)}");
-
-                return Ok(nameof(ResourceAController));
-            }
+            Logger.Log(correlationInfo, LogLevel.Debug, $"This is {nameof(ResourceAController)}");
+            return Ok(nameof(ResourceAController));
         }
     }
 }
