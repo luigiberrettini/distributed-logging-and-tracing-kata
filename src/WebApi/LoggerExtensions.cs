@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using System;
+using NLog;
 
 namespace DistributedLoggingTracing.WebApi
 {
@@ -7,6 +8,7 @@ namespace DistributedLoggingTracing.WebApi
         public static void Log(this ILogger logger, ICorrelationInfo correlationInfo, LogLevel logLevel, string message)
         {
             var logEventInfo = new LogEventInfo(logLevel, "", message);
+            logEventInfo.FillWithTimestamp();
             logEventInfo.FillWithCorrelationInfo(correlationInfo);
             logger.Log(logEventInfo);
         }
@@ -14,11 +16,17 @@ namespace DistributedLoggingTracing.WebApi
         public static void Trace(this ILogger logger, TraceInfo traceInfo, string message)
         {
             var logEventInfo = new LogEventInfo(LogLevel.Trace, "", message);
+            logEventInfo.FillWithTimestamp();
             logEventInfo.FillWithCorrelationInfo(traceInfo.CorrelationInfo);
             logEventInfo.FillWithParentCallInfo(traceInfo.ParentCallInfo);
             logEventInfo.FillWithCallInfo(traceInfo.CallInfo);
             logger.Log(logEventInfo);
 
+        }
+
+        private static void FillWithTimestamp(this LogEventInfo logEventInfo)
+        {
+            logEventInfo.Properties["occurredOn"] = DateTime.UtcNow.ToString("O");
         }
 
         private static void FillWithCorrelationInfo(this LogEventInfo logEventInfo, ICorrelationInfo correlationInfo)
