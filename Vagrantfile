@@ -5,16 +5,18 @@ Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/trusty64"
   config.vm.box_check_update = false
   config.vm.hostname = "docker"
-  config.vm.network :forwarded_port, id: 'ssh', guest: 22, host: 2200, auto_correct: false
-  config.vm.network :forwarded_port, id: 'rmq-epmd', guest: 4369, host: 4369, auto_correct: false
-  config.vm.network :forwarded_port, id: 'rmq-amqpWithTls', guest: 5671, host: 5671, auto_correct: false
-  config.vm.network :forwarded_port, id: 'rmq-amqpWithoutTls', guest: 5672, host: 5672, auto_correct: false
-  config.vm.network :forwarded_port, id: 'rmq-management1', guest: 15671, host: 15671, auto_correct: false
-  config.vm.network :forwarded_port, id: 'rmq-management2', guest: 15672, host: 15672, auto_correct: false
-  config.vm.network :forwarded_port, id: 'rmq-erlangDistribution', guest: 25672, host: 25672, auto_correct: false
-  config.vm.network :forwarded_port, id: 'elastic-rest', guest: 9200, host: 9200, auto_correct: false
-  config.vm.network :forwarded_port, id: 'elastic-nodeCommunication', guest: 9300, host: 9300, auto_correct: false
-  config.vm.network :forwarded_port, id: 'kibana', guest: 5601, host: 5601, auto_correct: false
+  config.vm.network :forwarded_port, id: 'ssh', guest: 22, host: 2200, protocol: 'tcp', auto_correct: false
+  config.vm.network :forwarded_port, id: 'logstash-udp1', guest: 1501, host: 1501, protocol: 'udp', auto_correct: false
+  config.vm.network :forwarded_port, id: 'logstash-udp2', guest: 1502, host: 1502, protocol: 'udp', auto_correct: false
+  config.vm.network :forwarded_port, id: 'rmq-epmd', guest: 4369, host: 4369, protocol: 'tcp', auto_correct: false
+  config.vm.network :forwarded_port, id: 'rmq-amqpWithTls', guest: 5671, host: 5671, protocol: 'tcp', auto_correct: false
+  config.vm.network :forwarded_port, id: 'rmq-amqpWithoutTls', guest: 5672, host: 5672, protocol: 'tcp', auto_correct: false
+  config.vm.network :forwarded_port, id: 'rmq-management1', guest: 15671, host: 15671, protocol: 'tcp', auto_correct: false
+  config.vm.network :forwarded_port, id: 'rmq-management2', guest: 15672, host: 15672, protocol: 'tcp', auto_correct: false
+  config.vm.network :forwarded_port, id: 'rmq-erlangDistribution', guest: 25672, host: 25672, protocol: 'tcp', auto_correct: false
+  config.vm.network :forwarded_port, id: 'elastic-rest', guest: 9200, host: 9200, protocol: 'tcp', auto_correct: false
+  config.vm.network :forwarded_port, id: 'elastic-nodeCommunication', guest: 9300, host: 9300, protocol: 'tcp', auto_correct: false
+  config.vm.network :forwarded_port, id: 'kibana', guest: 5601, host: 5601, protocol: 'tcp', auto_correct: false
   config.vm.provider "virtualbox" do |vb|
     vb.name = "vm_docker"
     vb.cpus = 2

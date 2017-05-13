@@ -71,13 +71,8 @@ To test it against a virtual machine please follow the instructions below:
 2. Download the Vagrantfile provided with this repo
 3. Execute the command `vagrant up`
 4. Connect via SSH to localhost on port 2200
-5. Use vagrant for both username and password
-6. Execute the following commands:
-   ```shell
-   git clone http://github.com/luigiberrettini/distributed-logging-and-tracing-kata
-   cd distributed-logging-and-tracing-kata
-   ./run.sh
-   ```
+5. Use `vagrant` for both username and password
+6. Execute the command `git clone http://github.com/luigiberrettini/distributed-logging-and-tracing-kata ~/dlt && ~/dlt/run.sh`
 7. Build the solution from Visual Studio
 8. Run the software
 9. Open your browser
