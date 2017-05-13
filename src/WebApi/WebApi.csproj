@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppBuilderExtensions.cs" />
+    <Compile Include="CorrelationInfoMessageHandler.cs" />
     <Compile Include="CorrelationInfoMiddleware.cs" />
     <Compile Include="CorrelationInfo.cs" />
     <Compile Include="ICorrelationInfo.cs" />

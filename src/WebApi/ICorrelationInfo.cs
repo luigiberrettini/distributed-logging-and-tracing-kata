@@ -7,5 +7,7 @@
         string ParentCallId { get; }
 
         string CallId { get; }
+
+        ICorrelationInfo ToInfoForOutgoingRequest();
     }
 }

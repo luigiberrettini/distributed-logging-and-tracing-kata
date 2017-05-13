@@ -5,9 +5,9 @@ namespace DistributedLoggingTracing.WebApi
 {
     public class CorrelationInfo : ICorrelationInfo
     {
-        private const string RequestIdHeaderName = "DLT-CI-RequestId";
-        private const string ParentCallIdHeaderName = "DLT-CI-ParentCallId";
-        private const string CallIdHeaderName = "DLT-CI-CallId";
+        public const string RequestIdHeaderName = "DLT-CI-RequestId";
+        public const string ParentCallIdHeaderName = "DLT-CI-ParentCallId";
+        public const string CallIdHeaderName = "DLT-CI-CallId";
         private const string ContextEnvironmentKey = "DistributedLoggingTracing.CorrelationInfo";
 
         public string RequestId { get; }
@@ -29,6 +29,11 @@ namespace DistributedLoggingTracing.WebApi
                 throw new InvalidOperationException("Correlation info not present in context");
         }
 
+        public ICorrelationInfo ToInfoForOutgoingRequest()
+        {
+            return new CorrelationInfo(RequestId, GenerateNewId(), CallId);
+        }
+
         private CorrelationInfo(IOwinContext context)
         {
             var headers = context?.Request?.Headers;
@@ -40,6 +45,13 @@ namespace DistributedLoggingTracing.WebApi
             RequestId = IdFromHeaderOrDefault(headerRequestId, GenerateNewId());
             ParentCallId = IdFromHeaderOrDefault(headerParentCallId, "");
             CallId = IdFromHeaderOrDefault(headerCallId, GenerateNewId());
+        }
+
+        private CorrelationInfo(string requestId, string callId, string parentCallId)
+        {
+            RequestId = requestId;
+            CallId = callId;
+            ParentCallId = parentCallId;
         }
 
         private string GenerateNewId()
