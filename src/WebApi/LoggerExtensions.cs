@@ -4,7 +4,7 @@ namespace DistributedLoggingTracing.WebApi
 {
     public static class LoggerExtensions
     {
-        public static void Log(this Logger logger, ICorrelationInfo correlationInfo, LogLevel logLevel, string message)
+        public static void Log(this ILogger logger, ICorrelationInfo correlationInfo, LogLevel logLevel, string message)
         {
             var logEventInfo = new LogEventInfo(logLevel, "", message);
 
