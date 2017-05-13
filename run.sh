@@ -19,12 +19,11 @@ while [ $? -ne 0 ]; do
     sleep 30
     docker run --net bridgenet --rm -e 'RABBIT_HOST=rabmq' -e 'RABBIT_VHOST=dlt' activatedgeek/rabbitmqadmin list nodes > /dev/null 2>&1
 done
-docker run --net bridgenet --rm -e 'RABBIT_HOST=rabmq' -e 'RABBIT_VHOST=dlt' activatedgeek/rabbitmqadmin declare exchange --vhost='dlt' name='x.logs' type='topic'
-docker run --net bridgenet --rm -e 'RABBIT_HOST=rabmq' -e 'RABBIT_VHOST=dlt' activatedgeek/rabbitmqadmin declare exchange --vhost='dlt' name='x.traces' type='topic'
+docker run --net bridgenet --rm -e 'RABBIT_HOST=rabmq' -e 'RABBIT_VHOST=dlt' activatedgeek/rabbitmqadmin declare exchange --vhost='dlt' name='x.lt' type='topic'
 docker run --net bridgenet --rm -e 'RABBIT_HOST=rabmq' -e 'RABBIT_VHOST=dlt' activatedgeek/rabbitmqadmin declare queue --vhost='dlt' name='q.logs' durable='true'
 docker run --net bridgenet --rm -e 'RABBIT_HOST=rabmq' -e 'RABBIT_VHOST=dlt' activatedgeek/rabbitmqadmin declare queue --vhost='dlt' name='q.traces' durable='true'
-docker run --net bridgenet --rm -e 'RABBIT_HOST=rabmq' -e 'RABBIT_VHOST=dlt' activatedgeek/rabbitmqadmin declare binding --vhost='dlt' source='x.logs' destination_type='queue' destination='q.logs' routing_key='*'
-docker run --net bridgenet --rm -e 'RABBIT_HOST=rabmq' -e 'RABBIT_VHOST=dlt' activatedgeek/rabbitmqadmin declare binding --vhost='dlt' source='x.traces' destination_type='queue' destination='q.traces' routing_key='*'
+docker run --net bridgenet --rm -e 'RABBIT_HOST=rabmq' -e 'RABBIT_VHOST=dlt' activatedgeek/rabbitmqadmin declare binding --vhost='dlt' source='x.lt' destination_type='queue' destination='q.logs' routing_key='logs'
+docker run --net bridgenet --rm -e 'RABBIT_HOST=rabmq' -e 'RABBIT_VHOST=dlt' activatedgeek/rabbitmqadmin declare binding --vhost='dlt' source='x.lt' destination_type='queue' destination='q.traces' routing_key='traces'
 
 #docker run --name ls2rmq --hostname ls2rmq --net bridgenet --rm -i -t -p 1501:1501/udp -p 1502:1502/udp -v $SCRIPT_DIR/logstash-pipelines/udp-to-rmq.conf:/usr/share/logstash/pipeline/udp-to-rmq.conf -e 'XPACK_MONITORING_ENABLED=false' docker.elastic.co/logstash/logstash:5.4.0
 docker run --name ls2rmq --hostname ls2rmq --net bridgenet -d -p 1501:1501/udp -p 1502:1502/udp -v $SCRIPT_DIR/logstash-pipelines/udp-to-rmq.conf:/usr/share/logstash/pipeline/udp-to-rmq.conf -e 'XPACK_MONITORING_ENABLED=false' docker.elastic.co/logstash/logstash:5.4.0
