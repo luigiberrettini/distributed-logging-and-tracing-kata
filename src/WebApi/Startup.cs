@@ -5,11 +5,13 @@ namespace DistributedLoggingTracing.WebApi
 {
     public class Startup
     {
-        public void Configuration(IAppBuilder app)
+        public void Configuration(IAppBuilder appBuilder)
         {
             var config = new HttpConfiguration();
             config.MapHttpAttributeRoutes();
-            app.UseWebApi(config);
+            appBuilder
+                .UseCorrelationInfo()
+                .UseWebApi(config);
         }
     }
 }
