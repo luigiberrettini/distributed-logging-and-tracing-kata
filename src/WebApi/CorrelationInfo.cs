@@ -31,7 +31,7 @@ namespace DistributedLoggingTracing.WebApi
 
         public ICorrelationInfo ToInfoForOutgoingRequest()
         {
-            return new CorrelationInfo(RequestId, GenerateNewId(), CallId);
+            return new CorrelationInfo(RequestId, CallId, GenerateNewId());
         }
 
         private CorrelationInfo(IOwinContext context)
@@ -47,11 +47,11 @@ namespace DistributedLoggingTracing.WebApi
             CallId = IdFromHeaderOrDefault(headerCallId, GenerateNewId());
         }
 
-        private CorrelationInfo(string requestId, string callId, string parentCallId)
+        private CorrelationInfo(string requestId, string parentCallId, string callId)
         {
             RequestId = requestId;
-            CallId = callId;
             ParentCallId = parentCallId;
+            CallId = callId;
         }
 
         private string GenerateNewId()
