@@ -22,6 +22,13 @@ namespace DistributedLoggingTracing.WebApi
             context?.Environment.Add(ContextEnvironmentKey, correlationInfo);
         }
 
+        public static ICorrelationInfo GetFromContext(IOwinContext context = null)
+        {
+            return context?.Environment != null && context.Environment.TryGetValue(ContextEnvironmentKey, out var contextInfo) ?
+                (ICorrelationInfo)contextInfo :
+                throw new InvalidOperationException("Correlation info not present in context");
+        }
+
         private CorrelationInfo(IOwinContext context)
         {
             var headers = context?.Request?.Headers;

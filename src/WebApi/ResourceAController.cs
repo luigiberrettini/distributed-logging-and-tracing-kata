@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System.Net.Http;
+using System.Web.Http;
 using NLog;
 
 namespace DistributedLoggingTracing.WebApi
@@ -12,8 +13,7 @@ namespace DistributedLoggingTracing.WebApi
         [HttpGet]
         public IHttpActionResult Get()
         {
-            Logger.Debug($"Called {nameof(ResourceAController)}");
-
+            Logger.Log(Request.GetOwinContext(), LogLevel.Debug, $"Called {nameof(ResourceAController)}");
             return Ok(nameof(ResourceAController));
         }
     }
