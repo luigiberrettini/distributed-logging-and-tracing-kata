@@ -11,7 +11,6 @@ namespace DistributedLoggingTracing.WebApi
 
         public static void Main()
         {
-            Logger.Debug("Starting application");
             WebApp.Start<Startup>(BaseAddress);
             Console.ReadLine();
         }
