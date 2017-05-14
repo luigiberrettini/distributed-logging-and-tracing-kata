@@ -5,23 +5,22 @@ This solution uses few custom-built components and limits the amount of differen
 
 ## Overview
 
-A service belonging to a distributed system is implemented by using custom code and a web framework.
+A service belonging to a distributed system is implemented by writing custom code that is called by a web framework.
 
-It is possible to correlate application logs and traces by means of correlation info stored in HTTP headers:
- - retrieve info from headers if called by other service or generate new info
- - logging library uses correlation info
- - HTTP client forwards correlation info to called services
- - HTTP client uses the logging library for logging and tracing purposes
+It is possible to correlate application logs and traces by means of correlation information stored in HTTP headers:
+ - the request pipeline customization either generates new info or retrieves info from the request headers (if the service was called by another one) then tracing the received call by means of the logging library
+ - the monitored service logs by means of the logging library
+ - HTTP client calls forward the correlation info (adding headers to the request) and trace outgoing calls by means of the logging library
+ - the logging library uses the correlation info to enrich messages
 
-Using a logging library and the related logging plugins, the solution is quickly adaptable to many programming languages (less custom code) and we can log also to a different target with no effort, should we need to do so.
+By using a logging library and logging to an UDP or, if messages should not be lost, TCP agent, the solution is quickly adaptable to many programming languages with less custom code to be maintained.
 
-Depending on the available logging plugins, messages can be published to RabbitMQ or Kafka.
-A message broker is used to allow for greater scalability and decouple applications from the log and trace management system.
+Agents do not need to be implemented in multilpe languages and are deployed locally to avoid network-related issues. A message broker is used to allow for greater scalability and decouple applications from the log and trace management system: messages are forwarded by agents to the broker.
 
 Logstash will be consuming messages from the broker via an input plugin, then transforming the messages in a format suitable for Elasticsearch via a filter plugin and finally writing to Elasticsearch via an output plugin.
 
 Kibana will be used to query Elasticsearch and visualize data:
- - the Graph plugin allows to visualize related items like all service calls related to a user request
+ - to visualize related items, like all service calls related to a user request, it is possible to use the [Graph plugin](http://www.elastic.co/products/x-pack/graph) or the [Network plugin](http://dlumbrer.github.io/kbn_network/) or to develop custom plugins to cover specific use cases
  - dashboards can be created to show, filter, query, cross, analyse log and trace information
  - Prelert machine learning technology has been [integrated into Elasticsearch](https://www.elastic.co/blog/introducing-machine-learning-for-the-elastic-stack) allowing anomaly detection and prediction
 
@@ -38,11 +37,13 @@ The `images` folder contains the following images in **PNG** and **SVG** format.
 
 ![Service sequence diagram 2](images/md-png/diagram-03.png)
 
+![Service sequence diagram 3](images/md-png/diagram-04.png)
+
 ### Logstash sequence diagram
-![Logstash sequence diagram](images/md-png/diagram-04.png)
+![Logstash sequence diagram](images/md-png/diagram-05.png)
 
 ### Kibana sequence diagram
-![Kibana sequence diagram](images/md-png/diagram-05.png)
+![Kibana sequence diagram](images/md-png/diagram-06.png)
 
 
 ## Evolutions
@@ -55,29 +56,34 @@ Tools used for software troubleshooting have a similar architecture:
  - UI to retrieve data from the API and visualize it
 
 Here follow some ideas on how to evolve the presented solution:
-1. a local UDP/TCP agent could be used to simplify communication and reduce latency
-2. Syslog or Fluentd could be used to unify logging collectors for applications and systems
-3. to reduce performance impacts tracing could adopt a sampling strategy
-4. data analysis and prediction can be improved using Spark jobs to aggregate data for use in the UI
-5. a custom UI can be developed to be tailored to requirements and easier to use
-6. we could unify metrics, trace and log management when Elasticsearch will have better time series support or Grafana alerting support for Elasticsearch
+1. Syslog or Fluentd could be used to unify logging collectors for applications and systems
+2. tracing could adopt a sampling strategy to avoid causing performance issues
+3. data analysis and prediction can be improved using a post-processing and aggregation data pipeline based on Spark
+4. custom Kibana plugins or a custom UI can be developed to be tailored to requirements and ease UX
+5. we could unify metrics, trace and log management when either Elasticsearch support for time series data will be better or Grafana alerting will support Elasticsearch as a data source
 
 
-## POC
-The `src` folder contains a basic C# implementation of the solution developed using Visual Studio 2017 and the .NET Framework 4.7
+## Proof of concept
+The PoC demonstrates that it is possible to create application logs and traces and view them in Kibana using it to graph and analyse them.
 
-To test it against a virtual machine please follow the instructions below:
+The agent is Logstash (with the UDP input plugin) and the broker RabbitMQ.
+Kibana plugin development or machine learning features have been left out of scope: service call map and failure prediction have not been tested.
+
+The `src` folder contains a basic C# implementation of the solution developed using Visual Studio 2017 and the .NET Framework 4.7:
+ - a self hosted ASP.NET Web Api with the resources A, B (that calls C), C (that calls www.google.com)
+ - an OWIN middleware to customize the request pipeline
+ - a custom HttpMessageHandler to handle outgoing calls
+ - logging extensions and NLog with the Network target sending via UDP
+
+To test the C# application against a virtual machine please follow the instructions below:
 1. Download VirtualBox and Vagrant and install them (Vagrant 1.9.4 needs to be manually [patched](http://github.com/mitchellh/vagrant/issues/8520))
-2. Download the Vagrantfile provided with this repo
+2. Download the [Vagrantfile](tools/Vagrantfile) provided with this repo
 3. Execute the command `vagrant up`
-4. Connect via SSH to localhost on port 2200
-5. Use `vagrant` for both username and password
-6. Execute the command `git clone http://github.com/luigiberrettini/distributed-logging-and-tracing-kata ~/dlt && ~/dlt/run.sh`
-7. Build the solution from Visual Studio
-8. Run the software
-9. Open your browser
-10. Go to http://localhost:9000/resourceA then to http://localhost:9000/resourceB
-11. Check console logs
-12. Go to Kibana at URL http://localhost:5601
-13. Configure the `dlt-*` index pattern with `occurredOn` as time field
-14. Click on **Discover** and you will see logs and traces
+4. Connect via SSH to localhost on port 2200 with username `vagrant` and password `vagrant` and execute the command `git clone http://github.com/luigiberrettini/distributed-logging-and-tracing-kata ~/dlt && ~/dlt/tools/run.sh`
+5. In Windows execute the command `git clone http://github.com/luigiberrettini/distributed-logging-and-tracing-kata .\dlt && .\dlt\tools\run.bat`
+6. Open your browser
+7. Go to http://localhost:9000/resourceA then to http://localhost:9000/resourceB
+8. Check console logs
+9. Go to Kibana at URL http://localhost:5601
+10. Configure the `dlt-*` index pattern with `@timestamp` as time field
+11. Click on **Discover** and you will see logs and traces
