@@ -2,8 +2,8 @@
 
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-docker stop ls2ela ls2rmq kbana elast rabmq 
-docker rm ls2ela ls2rmq kbana elast rabmq 
+docker stop ls2ela ls2rmq kbana elast rabmq
+docker rm ls2ela ls2rmq kbana elast rabmq
 
 docker network rm bridgenet
 
