@@ -76,7 +76,9 @@ The `src` folder contains a basic C# implementation of the solution developed us
  - logging extensions and NLog with the Network target sending via UDP
 
 To test the C# application against a virtual machine please follow the instructions below:
-1. Download VirtualBox and Vagrant and install them (Vagrant 1.9.4 needs to be manually [patched](http://github.com/mitchellh/vagrant/issues/8520))
+1. Install the [Microsoft .NET Framework 4.7 Developer Pack](http://www.microsoft.com/en-us/download/details.aspx?id=55168)
+2. Install [VirtualBox and its Extension Pack](http://www.virtualbox.org/wiki/Downloads)
+3. Install [Vagrant](https://www.vagrantup.com/downloads.html) (Vagrant 1.9.4 needs to be manually [patched](http://github.com/mitchellh/vagrant/issues/8520))
 2. Download the [Vagrantfile](tools/Vagrantfile) provided with this repo
 3. Execute the command `vagrant up`
 4. Connect via SSH to localhost on port 2200 with username `vagrant` and password `vagrant` and execute the command `git clone http://github.com/luigiberrettini/distributed-logging-and-tracing-kata ~/dlt && ~/dlt/tools/run.sh`
