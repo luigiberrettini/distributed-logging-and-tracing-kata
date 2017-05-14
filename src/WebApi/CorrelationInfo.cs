@@ -9,6 +9,7 @@ namespace DistributedLoggingTracing.WebApi
         public const string ParentCallIdHeaderName = "DLT-CI-ParentCallId";
         public const string CallIdHeaderName = "DLT-CI-CallId";
         private const string ContextEnvironmentKey = "DistributedLoggingTracing.CorrelationInfo";
+        private const string IdForMissingParentCall = "0";
 
         public string RequestId { get; }
 
@@ -43,7 +44,7 @@ namespace DistributedLoggingTracing.WebApi
             var headerCallId = headers?[CallIdHeaderName];
 
             RequestId = IdFromHeaderOrDefault(headerRequestId, GenerateNewId());
-            ParentCallId = IdFromHeaderOrDefault(headerParentCallId, "");
+            ParentCallId = IdFromHeaderOrDefault(headerParentCallId, IdForMissingParentCall);
             CallId = IdFromHeaderOrDefault(headerCallId, GenerateNewId());
         }
 
