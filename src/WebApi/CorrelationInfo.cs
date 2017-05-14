@@ -25,9 +25,9 @@ namespace DistributedLoggingTracing.WebApi
 
         public static ICorrelationInfo GetFromContext(IOwinContext context = null)
         {
-            return context?.Environment != null && context.Environment.TryGetValue(ContextEnvironmentKey, out var contextInfo) ?
-                (ICorrelationInfo)contextInfo :
-                throw new InvalidOperationException("Correlation info not present in context");
+            object contextInfo;
+            context.Environment.TryGetValue(ContextEnvironmentKey, out contextInfo);
+            return (ICorrelationInfo)contextInfo;
         }
 
         public ICorrelationInfo ToInfoForOutgoingRequest()
@@ -62,7 +62,8 @@ namespace DistributedLoggingTracing.WebApi
 
         private string IdFromHeaderOrDefault(string header, string defaultValue)
         {
-            return Guid.TryParseExact(header, "N", out var _) ? header : defaultValue;
+            Guid parsedGuid;
+            return Guid.TryParseExact(header, "N", out parsedGuid) ? header : defaultValue;
         }
     }
 }
