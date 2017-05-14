@@ -1,5 +1,6 @@
 @echo off
 
+
 set scriptDir=%~dp0
 set scriptDir=%scriptDir:~0,-1%
 set rootDir=%scriptDir%\..
@@ -18,6 +19,8 @@ set packagesDir="%srcDir%\packages"
 set solutionFile="%srcDir%\%softwareName%.sln"
 set toBeDeployed=%srcDir%\WebApi\bin\Release\*.*
 set deployDir="%rootDir%\deploy"
+
+set pauseMode=%1
 
 
 if exist %deployDir% (
@@ -39,3 +42,8 @@ echo.
 
 echo Deploying...
 xcopy %toBeDeployed% %deployDir% /H /Q /R /Y
+echo.
+
+if [%pauseMode%] == [] (
+    pause
+)
