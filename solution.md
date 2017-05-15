@@ -81,11 +81,18 @@ To test the C# application against a virtual machine please follow the instructi
 3. Install [Vagrant](https://www.vagrantup.com/downloads.html) (Vagrant 1.9.4 needs to be manually [patched](http://github.com/mitchellh/vagrant/issues/8520))
 2. Download the [Vagrantfile](tools/Vagrantfile) provided with this repo
 3. Execute the command `vagrant up`
-4. Connect via SSH to localhost on port 2200 with username `vagrant` and password `vagrant` and execute the command `git clone http://github.com/luigiberrettini/distributed-logging-and-tracing-kata ~/dlt && ~/dlt/tools/run.sh`
-5. In Windows execute the command `git clone http://github.com/luigiberrettini/distributed-logging-and-tracing-kata .\dlt && .\dlt\tools\run.bat`
-6. Open your browser
-7. Go to http://localhost:9000/resourceA then to http://localhost:9000/resourceB
-8. Check console logs
-9. Go to Kibana at URL http://localhost:5601
-10. Configure the `dlt-*` index pattern with `@timestamp` as time field
-11. Click on **Discover** and you will see logs and traces
+4. Connect via SSH to localhost on port 2200 with username `vagrant` and password `vagrant`
+5. Execute the following command from the Linux shell:
+   ```shell
+   git clone http://github.com/luigiberrettini/distributed-logging-and-tracing-kata ~/dlt && ~/dlt/tools/run.sh
+   ```
+6. Execute the following command from the Windows shell:
+   ```shell
+   git clone http://github.com/luigiberrettini/distributed-logging-and-tracing-kata .\dlt && .\dlt\tools\run.bat
+   ```
+7. Open your browser
+8. Go to http://localhost:9000/resourceA then to http://localhost:9000/resourceB
+9. Check console logs
+10. Go to Kibana at URL http://localhost:5601
+11. Configure the `dlt-*` index pattern with `@timestamp` as time field
+12. Click on **Discover** and you will see logs and traces
