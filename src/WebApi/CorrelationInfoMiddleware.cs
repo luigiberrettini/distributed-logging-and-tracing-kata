@@ -25,7 +25,7 @@ namespace DistributedLoggingTracing.WebApi
             Logger.Trace(BuildTraceInfo(context, stopwatch.ElapsedMilliseconds), "Handled external call");
         }
 
-        private TraceInfo BuildTraceInfo(IOwinContext context, long duration)
+        private static TraceInfo BuildTraceInfo(IOwinContext context, long duration)
         {
             var correlationInfo = CorrelationInfo.GetFromContext(context);
             var request = context.Request;
