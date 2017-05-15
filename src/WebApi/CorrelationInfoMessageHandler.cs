@@ -11,27 +11,25 @@ namespace DistributedLoggingTracing.WebApi
         private readonly Stopwatch stopwatch;
         private readonly ILogger logger;
         private readonly HttpRequestMessage parentRequest;
-        private readonly ICorrelationInfo parentCorrelationInfo;
 
-        public CorrelationInfoMessageHandler(ILogger logger, HttpRequestMessage parentRequest, ICorrelationInfo parentCorrelationInfo)
-            : this(logger, parentRequest, parentCorrelationInfo, new HttpClientHandler())
+        public CorrelationInfoMessageHandler(ILogger logger, HttpRequestMessage parentRequest)
+            : this(logger, parentRequest, new HttpClientHandler())
         {
-            this.parentRequest = parentRequest;
         }
 
-        public CorrelationInfoMessageHandler(ILogger logger, HttpRequestMessage parentRequest, ICorrelationInfo parentCorrelationInfo, HttpMessageHandler innerHandler)
+        public CorrelationInfoMessageHandler(ILogger logger, HttpRequestMessage parentRequest, HttpMessageHandler innerHandler)
             : base(innerHandler)
         {
             stopwatch = new Stopwatch();
             this.logger = logger;
             this.parentRequest = parentRequest;
-            this.parentCorrelationInfo = parentCorrelationInfo;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            var owinContext = parentRequest.GetOwinContext();
+            var parentCorrelationInfo = CorrelationInfo.GetFromContext(owinContext);
             var correlationInfo = parentCorrelationInfo.ToInfoForOutgoingRequest();
-
             request.Headers.Add(CorrelationInfo.RequestIdHeaderName, correlationInfo.RequestId);
             request.Headers.Add(CorrelationInfo.ParentCallIdHeaderName, correlationInfo.ParentCallId);
             request.Headers.Add(CorrelationInfo.CallIdHeaderName, correlationInfo.CallId);

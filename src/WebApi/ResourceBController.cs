@@ -10,6 +10,12 @@ namespace DistributedLoggingTracing.WebApi
     public class ResourceBController : ApiController
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private readonly Func<ILogger, HttpRequestMessage, DelegatingHandler> handlerBuilder;
+
+        public ResourceBController(Func<ILogger, HttpRequestMessage, DelegatingHandler> handlerBuilder)
+        {
+            this.handlerBuilder = handlerBuilder;
+        }
 
         [Route("")]
         [HttpGet]
@@ -17,7 +23,7 @@ namespace DistributedLoggingTracing.WebApi
         {
             var correlationInfo = CorrelationInfo.GetFromContext(Request.GetOwinContext());
 
-            using (var httpClient = new HttpClient(new CorrelationInfoMessageHandler(Logger, Request, correlationInfo)))
+            using (var httpClient = new HttpClient(handlerBuilder(Logger, Request)))
             {
                 httpClient.BaseAddress = new Uri(Request.RequestUri.GetLeftPart(UriPartial.Authority));
                 var response = await httpClient.GetAsync("/resourceC");

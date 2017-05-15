@@ -8,8 +8,11 @@ namespace DistributedLoggingTracing.WebApi
         public void Configuration(IAppBuilder appBuilder)
         {
             var config = new HttpConfiguration();
+
             config.MapHttpAttributeRoutes();
+
             appBuilder
+                .UseSimpleInjector(config)
                 .UseCorrelationInfo()
                 .UseWebApi(config);
         }
