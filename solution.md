@@ -92,7 +92,9 @@ To test the C# application against a virtual machine please follow the instructi
    ```
 7. Open your browser
 8. Go to http://localhost:9000/resourceA then to http://localhost:9000/resourceB
-9. Check console logs
-10. Go to Kibana at URL http://localhost:5601
-11. Configure the `dlt-*` index pattern with `@timestamp` as time field
-12. Click on **Discover** and you will see logs and traces
+9. Check the Windows shell for console logs
+10. Go to RabbitMQ management opening URL http://localhost:15672 to check if messages have been handled
+11. Check if a `dlt-*` index has been created on Elasticsearch opening URL http://localhost:9200/_cat/indices?v
+12. Go to Kibana opening URL http://localhost:5601
+13. Configure the `dlt-*` index pattern with `@timestamp` as time field
+14. Click on **Discover** to see logs and traces
