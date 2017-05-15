@@ -10,7 +10,7 @@ using SimpleInjector.Lifestyles;
 
 namespace DistributedLoggingTracing.WebApi
 {
-    public class SimpleInjectorMiddleware
+    public sealed class SimpleInjectorMiddleware : IDisposable
     {
         private readonly Container container;
 
@@ -38,6 +38,11 @@ namespace DistributedLoggingTracing.WebApi
             {
                 await next();
             }
+        }
+
+        public void Dispose()
+        {
+            container.Dispose();
         }
     }
 }
