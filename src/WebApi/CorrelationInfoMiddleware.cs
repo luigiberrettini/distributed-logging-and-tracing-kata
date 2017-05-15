@@ -7,8 +7,7 @@ namespace DistributedLoggingTracing.WebApi
 {
     public class CorrelationInfoMiddleware : OwinMiddleware
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
         private readonly Stopwatch stopwatch;
 
         public CorrelationInfoMiddleware(OwinMiddleware next) : base(next)

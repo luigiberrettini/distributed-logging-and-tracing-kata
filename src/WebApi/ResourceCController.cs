@@ -8,14 +8,14 @@ namespace DistributedLoggingTracing.WebApi
     [RoutePrefix("resourceC")]
     public class ResourceCController : ApiController
     {
+        private readonly ILogger logger;
         private readonly HttpClient httpClient;
 
-        public ResourceCController(HttpClient httpClient)
+        public ResourceCController(ILogger logger, HttpClient httpClient)
         {
+            this.logger = logger;
             this.httpClient = httpClient;
         }
-
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         [Route("")]
         [HttpGet]
@@ -23,7 +23,7 @@ namespace DistributedLoggingTracing.WebApi
         {
             var correlationInfo = CorrelationInfo.GetFromContext(Request.GetOwinContext());
             await httpClient.GetAsync("http://www.google.com");
-            Logger.Log(correlationInfo, LogLevel.Debug, $"Called Google from {nameof(ResourceCController)}");
+            logger.Log(correlationInfo, LogLevel.Debug, $"Called Google from {nameof(ResourceCController)}");
             return Ok(nameof(ResourceCController));
         }
     }

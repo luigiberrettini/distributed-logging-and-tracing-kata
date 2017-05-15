@@ -9,29 +9,26 @@ namespace DistributedLoggingTracing.WebApi
     [RoutePrefix("resourceB")]
     public class ResourceBController : ApiController
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private readonly Func<ILogger, HttpRequestMessage, DelegatingHandler> handlerBuilder;
+        private readonly ILogger logger;
+        private readonly HttpClient httpClient;
 
-        public ResourceBController(Func<ILogger, HttpRequestMessage, DelegatingHandler> handlerBuilder)
+        public ResourceBController(ILogger logger, HttpClient httpClient)
         {
-            this.handlerBuilder = handlerBuilder;
+            this.logger = logger;
+            this.httpClient = httpClient;
         }
 
         [Route("")]
         [HttpGet]
         public async Task<IHttpActionResult> Get()
         {
+            var baseUri = new Uri(Request.RequestUri.GetLeftPart(UriPartial.Authority));
+            var request = new HttpRequestMessage(HttpMethod.Get, new Uri(baseUri, "resourceC"));
+            var response = await httpClient.SendAsync(request);
+            var responseStatus = response.IsSuccessStatusCode ? "Success" : "Failure";
             var correlationInfo = CorrelationInfo.GetFromContext(Request.GetOwinContext());
-
-            using (var httpClient = new HttpClient(handlerBuilder(Logger, Request)))
-            {
-                var baseUri = new Uri(Request.RequestUri.GetLeftPart(UriPartial.Authority));
-                var request = new HttpRequestMessage(HttpMethod.Get, new Uri(baseUri, "resourceC"));
-                var response = await httpClient.SendAsync(request);
-                var responseStatus = response.IsSuccessStatusCode ? "Success" : "Failure";
-                Logger.Log(correlationInfo, LogLevel.Debug, $"{responseStatus}: called {nameof(ResourceCController)}");
-                return Ok(nameof(ResourceBController));
-            }
+            logger.Log(correlationInfo, LogLevel.Debug, $"{responseStatus}: called {nameof(ResourceCController)}");
+            return Ok(nameof(ResourceBController));
         }
     }
 }

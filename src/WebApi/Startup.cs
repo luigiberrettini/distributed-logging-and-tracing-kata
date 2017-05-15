@@ -13,6 +13,7 @@ namespace DistributedLoggingTracing.WebApi
 
             appBuilder
                 .UseSimpleInjector(config)
+                .UseOwinCallContext()
                 .UseCorrelationInfo()
                 .UseWebApi(config);
         }

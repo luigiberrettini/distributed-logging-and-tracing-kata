@@ -24,12 +24,9 @@ namespace DistributedLoggingTracing.WebApi
         public void ConfigureContainer()
         {
             container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
-
-            container.Register(() => new HttpClient(), Lifestyle.Singleton);
-
-            container.Register(() => new Func<ILogger, HttpRequestMessage, DelegatingHandler>(
-                (logger, request) => new CorrelationInfoMessageHandler(logger, request)),
-                Lifestyle.Singleton);
+            container.Register<ILogger>(LogManager.GetCurrentClassLogger, Lifestyle.Singleton);
+            container.Register<HttpMessageHandler, CorrelationInfoHttpMessageHandler>(Lifestyle.Singleton);
+            container.Register<HttpClient, CorrelationInfoHttpClient>(Lifestyle.Singleton);
         }
 
         public async Task Invoke(IOwinContext context, Func<Task> next)

@@ -6,29 +6,21 @@ using NLog;
 
 namespace DistributedLoggingTracing.WebApi
 {
-    public class CorrelationInfoMessageHandler : DelegatingHandler
+    public class CorrelationInfoHttpMessageHandler : DelegatingHandler
     {
         private readonly Stopwatch stopwatch;
         private readonly ILogger logger;
-        private readonly HttpRequestMessage parentRequest;
 
-        public CorrelationInfoMessageHandler(ILogger logger, HttpRequestMessage parentRequest)
-            : this(logger, parentRequest, new HttpClientHandler())
-        {
-        }
-
-        public CorrelationInfoMessageHandler(ILogger logger, HttpRequestMessage parentRequest, HttpMessageHandler innerHandler)
-            : base(innerHandler)
+        public CorrelationInfoHttpMessageHandler(ILogger logger)
+            : base(new HttpClientHandler())
         {
             stopwatch = new Stopwatch();
             this.logger = logger;
-            this.parentRequest = parentRequest;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var owinContext = parentRequest.GetOwinContext();
-            var parentCorrelationInfo = CorrelationInfo.GetFromContext(owinContext);
+            var parentCorrelationInfo = CorrelationInfo.GetFromContext(OwinCallContext.Current);
             var correlationInfo = parentCorrelationInfo.ToInfoForOutgoingRequest();
             request.Headers.Add(CorrelationInfo.RequestIdHeaderName, correlationInfo.RequestId);
             request.Headers.Add(CorrelationInfo.ParentCallIdHeaderName, correlationInfo.ParentCallId);
@@ -41,9 +33,10 @@ namespace DistributedLoggingTracing.WebApi
             return response;
         }
 
-        private TraceInfo BuildTraceInfo(ICorrelationInfo correlationInfo, HttpRequestMessage request, long duration)
+        private static TraceInfo BuildTraceInfo(ICorrelationInfo correlationInfo, HttpRequestMessage request, long duration)
         {
-            var parentCallInfo = new HttpRequestDetails(parentRequest.RequestUri, parentRequest.Method.Method);
+            var parentRequest = OwinCallContext.Current.Request;
+            var parentCallInfo = new HttpRequestDetails(parentRequest.Uri, parentRequest.Method);
             var callInfo = new HttpRequestDetails(request.RequestUri, request.Method.Method, duration);
             return new TraceInfo(correlationInfo, parentCallInfo, callInfo);
         }
