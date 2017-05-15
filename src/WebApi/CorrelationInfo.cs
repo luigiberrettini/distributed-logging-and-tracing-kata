@@ -23,7 +23,7 @@ namespace DistributedLoggingTracing.WebApi
             context?.Environment.Add(ContextEnvironmentKey, correlationInfo);
         }
 
-        public static ICorrelationInfo GetFromContext(IOwinContext context = null)
+        public static ICorrelationInfo GetFromContext(IOwinContext context)
         {
             object contextInfo;
             context.Environment.TryGetValue(ContextEnvironmentKey, out contextInfo);
