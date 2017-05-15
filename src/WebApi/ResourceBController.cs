@@ -25,8 +25,9 @@ namespace DistributedLoggingTracing.WebApi
 
             using (var httpClient = new HttpClient(handlerBuilder(Logger, Request)))
             {
-                httpClient.BaseAddress = new Uri(Request.RequestUri.GetLeftPart(UriPartial.Authority));
-                var response = await httpClient.GetAsync("/resourceC");
+                var baseUri = new Uri(Request.RequestUri.GetLeftPart(UriPartial.Authority));
+                var request = new HttpRequestMessage(HttpMethod.Get, new Uri(baseUri, "resourceC"));
+                var response = await httpClient.SendAsync(request);
                 var responseStatus = response.IsSuccessStatusCode ? "Success" : "Failure";
                 Logger.Log(correlationInfo, LogLevel.Debug, $"{responseStatus}: called {nameof(ResourceCController)}");
                 return Ok(nameof(ResourceBController));
