@@ -55,12 +55,12 @@ namespace DistributedLoggingTracing.WebApi
             CallId = callId;
         }
 
-        private string GenerateNewId()
+        private static string GenerateNewId()
         {
             return Guid.NewGuid().ToString("N");
         }
 
-        private string IdFromHeaderOrDefault(string header, string defaultValue)
+        private static string IdFromHeaderOrDefault(string header, string defaultValue)
         {
             Guid parsedGuid;
             return Guid.TryParseExact(header, "N", out parsedGuid) ? header : defaultValue;
