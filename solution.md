@@ -67,7 +67,7 @@ Here follow some ideas on how to evolve the presented solution:
 The PoC demonstrates that it is possible to create application logs and traces and view them in Kibana using it to graph and analyse them.
 
 The agent is Logstash (with the UDP input plugin) and the broker RabbitMQ.
-Kibana plugin development or machine learning features have been left out of scope: service call map and failure prediction have not been tested.
+Machine learning features have been left out of scope: failure prediction has not been tested.
 
 The `src` folder contains a basic C# implementation of the solution developed using Visual Studio 2017 and the .NET Framework 4.7:
  - a self hosted ASP.NET Web Api with the resources A, B (that calls C), C (that calls www.google.com)
@@ -95,6 +95,7 @@ To test the C# application against a virtual machine please follow the instructi
 9. Check the Windows shell for console logs
 10. Go to RabbitMQ management opening URL http://localhost:15672 to check if messages have been handled
 11. Check if a `dlt-*` index has been created on Elasticsearch opening URL http://localhost:9200/_cat/indices?v
-12. Go to Kibana opening URL http://localhost:5601
+12. Go to Kibana opening URL http://localhost:5601 (it might take up to 10 minutes to the containerized Kibana to be ready to accept connections)
 13. Configure the `dlt-*` index pattern with `@timestamp` as time field
 14. Click on **Discover** to see logs and traces
+15. To display the map of calls click on **Visualize** and create a Network visualization on the `dlt-*` index with a `Node` bucket on the field `parentCallId.keyword`, a `Node` sub-bucket on the field `callId.keyword` and a `Node Color` sub-bucket on the field `requestId.keyword` (it is also possible to increase bucket size and filter by request id or change options to display directional edges/connections between nodes)

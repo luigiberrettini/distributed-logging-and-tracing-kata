@@ -13,13 +13,24 @@ printf "\n***** Removing network...\n"
 docker network rm bridgenet
 
 
+if [ ! -d "$SCRIPT_DIR/network_vis" ]; then
+    printf "\n***** Building Kibana network plugin...\n"
+    git clone https://github.com/dlumbrer/kbn_network.git $SCRIPT_DIR/network_vis
+    sed -i "s/5\.3\.0/5\.4\.0/g" $SCRIPT_DIR/network_vis/package.json
+    cd $SCRIPT_DIR/network_vis
+    npm install
+    cd $SCRIPT_DIR
+fi
+
 printf "\n***** Creating network...\n"
 docker network create -d bridge bridgenet
 
 printf "\n***** Running containers...\n"
 docker run --name rabmq --hostname rabmq --net bridgenet -d -p 4369:4369 -p 5671:5671 -p 5672:5672 -p 15671:15671 -p 15672:15672 -p 25672:25672 -e 'RABBITMQ_DEFAULT_VHOST=dlt' rabbitmq:management
-docker run --name elast --hostname elast --net bridgenet -d -p 9200:9200 -p 9300:9300 -e 'ES_JAVA_OPTS=-Xms1g -Xmx1g' -e 'http.host=0.0.0.0' -e 'transport.host=127.0.0.1' docker.elastic.co/elasticsearch/elasticsearch:5.4.0
-docker run --name kbana --hostname kbana --net bridgenet -d -p 5601:5601 -e 'ELASTICSEARCH_URL=http://elast:9200' docker.elastic.co/kibana/kibana:5.4.0
+docker run --name elast --hostname elast --net bridgenet -d -p 9200:9200 -p 9300:9300 -e 'ES_JAVA_OPTS=-Xms512m -Xmx512m' -e 'http.host=0.0.0.0' -e 'transport.host=127.0.0.1' docker.elastic.co/elasticsearch/elasticsearch:5.4.0
+docker container create --name kbana --hostname kbana --net bridgenet -p 5601:5601 -e 'ELASTICSEARCH_URL=http://elast:9200' docker.elastic.co/kibana/kibana:5.4.0
+docker cp $SCRIPT_DIR/network_vis kbana:/usr/share/kibana/plugins
+docker container start kbana
 docker run --net bridgenet --rm -e 'RABBIT_HOST=rabmq' -e 'RABBIT_VHOST=dlt' activatedgeek/rabbitmqadmin list nodes > /dev/null 2>&1
 while [ $? -ne 0 ]; do
     sleep 30
